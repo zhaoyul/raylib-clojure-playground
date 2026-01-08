@@ -10,7 +10,7 @@
   "SetTargetFPS"
   [::mem/int] ::mem/void)
 
-(defcfn get-target-fps
+(defcfn get-fps
   "Get current FPS"
   "GetFPS"
   [] ::mem/int)

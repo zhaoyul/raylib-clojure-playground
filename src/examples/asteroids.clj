@@ -1,6 +1,5 @@
 (ns examples.asteroids
   (:require
-   [clojure.string :as string]
    [raylib.core.window :as rcw]
    [raylib.core.timing :as rct]
    [raylib.core.drawing :as rcd]
@@ -11,6 +10,16 @@
    [raylib-ext :as ext]
    [debug-stats])
   (:gen-class))
+
+;; Virtual resolution - the game renders at this fixed size
+(def VIRTUAL_WIDTH 800)
+(def VIRTUAL_HEIGHT 800)
+
+;; Render target for resolution-independent rendering
+(def render-target (atom nil))
+
+;; Current scale and offset for letterboxing
+(def screen-state (atom {:scale 1.0 :offset-x 0 :offset-y 0}))
 
 ;; CREDITS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; All the math and helper functions for this asteroids impl are from
@@ -28,8 +37,9 @@
 
 ;; CONSTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def WIDTH 800)
-(def HEIGHT 800)
+;; Use virtual dimensions for game logic
+(def WIDTH VIRTUAL_WIDTH)
+(def HEIGHT VIRTUAL_HEIGHT)
 (def MAX_ASTEROID_SIZE 3)
 (def BASE_ASTEROID_SPEED 1)
 (def MAX_BULLET_AGE 120)
@@ -270,15 +280,45 @@
     (assoc game :screen :game)
     game))
 
+(def game-atom (atom (initial-state)))
+
+;; SCALING ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn calculate-letterbox-scale
+  "Calculate scale and offset for letterboxing to maintain aspect ratio"
+  []
+  (let [screen-width (rcw/get-screen-width)
+        screen-height (rcw/get-screen-height)
+        scale-x (/ screen-width (float VIRTUAL_WIDTH))
+        scale-y (/ screen-height (float VIRTUAL_HEIGHT))
+        scale (min scale-x scale-y)
+        offset-x (/ (- screen-width (* VIRTUAL_WIDTH scale)) 2.0)
+        offset-y (/ (- screen-height (* VIRTUAL_HEIGHT scale)) 2.0)]
+    {:scale scale :offset-x offset-x :offset-y offset-y}))
+
+(defn update-screen-state!
+  "Update screen state when window is resized"
+  []
+  (when (or (rcw/is-window-resized?) (= 1 (:frame-counter @game-atom)))
+    (reset! screen-state (calculate-letterbox-scale))))
+
 (defn tick [{:keys [screen] :as game}]
   ;; Update debug stats (handles F1 toggle)
   (debug-stats/update!)
-  
+
+  ;; Handle F11 fullscreen toggle
+  (when (rck/is-key-pressed? (:f11 enums/keyboard-key))
+    (rcw/toggle-fullscreen!)
+    (reset! screen-state (calculate-letterbox-scale)))
+
+  ;; Update screen state on resize
+  (update-screen-state!)
+
   ;; Update custom stats
   (debug-stats/set-custom-stat! :asteroids (count (:asteroids game)))
   (debug-stats/set-custom-stat! :bullets (count (:bullets game)))
   (debug-stats/set-custom-stat! :alive? (:alive game))
-  
+
   (try
     (condp = screen
       :title (handle-start game)
@@ -287,8 +327,6 @@
     (catch Exception e
       (println "Exception in tick: " e)
       (Thread/sleep 1000))))
-
-(def game-atom (atom (initial-state)))
 
 ;; DRAW ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -367,16 +405,15 @@
         width (ext/measure-text text size)]
     (rtd/draw-text! text (int (- (quot WIDTH 2) (/ width 2))) (- HEIGHT 50) size colors/white)))
 
-(defn draw-game [game]
-  (with-drawing
-    (rcd/clear-background! colors/black)
-    (draw-asteroids game)
-    (if (:alive game)
-      (draw-ship game)
-      (draw-dead))
-    (draw-bullets game)
-    ;; Draw debug stats overlay (F1 to toggle)
-    (debug-stats/draw!)))
+(defn draw-game-content [game]
+  (rcd/clear-background! colors/black)
+  (draw-asteroids game)
+  (if (:alive game)
+    (draw-ship game)
+    (draw-dead))
+  (draw-bullets game)
+  ;; Draw debug stats overlay (F1 to toggle)
+  (debug-stats/draw!))
 
 (defn draw-ending [game]
   (let [text "You DIED. Press ENTER to restart"
@@ -384,23 +421,50 @@
         width (ext/measure-text text size)]
     (rtd/draw-text! text (int (- (quot WIDTH 2) (/ width 2))) (int (/ HEIGHT 2)) size colors/white)))
 
-(defn draw-title [_]
-  (with-drawing
-    (rcd/clear-background! colors/black)
-    (let [text "press ENTER to start"
-          size 20
-          width (ext/measure-text text size)]
-      (rtd/draw-text! text (int (- (quot WIDTH 2) (/ width 2))) (int (/ HEIGHT 2)) size colors/white))
-    (rtd/draw-text! "F1 for debug stats" 10 (- HEIGHT 30) 14 colors/gray)
-    ;; Draw debug stats overlay
-    (debug-stats/draw!)))
+(defn draw-title-content [_]
+  (rcd/clear-background! colors/black)
+  (let [text "press ENTER to start"
+        size 20
+        width (ext/measure-text text size)]
+    (rtd/draw-text! text (int (- (quot WIDTH 2) (/ width 2))) (int (/ HEIGHT 2)) size colors/white))
+  (rtd/draw-text! "F1 for debug stats | F11 toggle fullscreen" 10 (- HEIGHT 30) 14 colors/gray)
+  ;; Draw debug stats overlay
+  (debug-stats/draw!))
+
+(defn draw-to-render-texture
+  "Draw game content to render texture at virtual resolution"
+  [{:keys [screen] :as game}]
+  (ext/begin-texture-mode! @render-target)
+  (condp = screen
+    :title (draw-title-content game)
+    :game (draw-game-content game)
+    :ending (draw-ending game))
+  (ext/end-texture-mode!))
+
+(defn draw-render-texture-to-screen
+  "Draw the render texture scaled to fit screen with letterboxing"
+  []
+  (let [{:keys [scale offset-x offset-y]} @screen-state
+        target @render-target
+        ;; Source rectangle (entire render texture, flipped Y because OpenGL)
+        source {:x 0.0 :y (float VIRTUAL_HEIGHT)
+                :width (float VIRTUAL_WIDTH) :height (float (- VIRTUAL_HEIGHT))}
+        ;; Destination rectangle (scaled and centered on screen)
+        dest {:x (float offset-x) :y (float offset-y)
+              :width (float (* VIRTUAL_WIDTH scale))
+              :height (float (* VIRTUAL_HEIGHT scale))}]
+    (ext/draw-texture-pro! (:texture target) source dest {:x 0.0 :y 0.0} 0.0 colors/white)))
 
 (defn draw [{:keys [screen] :as game}]
   (try
-    (condp = screen
-      :title (draw-title game)
-      :game   (draw-game game)
-      :ending (draw-ending game))
+    ;; First render game to virtual resolution texture
+    (draw-to-render-texture game)
+
+    ;; Then draw the texture scaled to screen with letterboxing
+    (rcd/begin-drawing!)
+    (rcd/clear-background! colors/black) ; Black bars for letterboxing
+    (draw-render-texture-to-screen)
+    (rcd/end-drawing!)
     (catch Exception e
       (println "Exception in draw: " e)
       (Thread/sleep 1000))))
@@ -420,7 +484,22 @@
            :frame-counter (inc (:frame-counter game)))))
 
 (defn init []
-  (rcw/init-window! WIDTH HEIGHT "Raylib Clojure Asteroids")
+  ;; Set config flags before creating window
+  (rcw/set-config-flags! (bit-or (:window-resizable enums/config-flag)
+                                  (:vsync-hint enums/config-flag)))
+
+  ;; Get monitor size for fullscreen
+  (rcw/init-window! VIRTUAL_WIDTH VIRTUAL_HEIGHT "Raylib Clojure Asteroids")
+
+  ;; Create render texture at virtual resolution
+  (reset! render-target (ext/load-render-texture! VIRTUAL_WIDTH VIRTUAL_HEIGHT))
+
+  ;; Start in true fullscreen (hides menu bar)
+  (rcw/toggle-fullscreen!)
+
+  ;; Calculate initial letterbox scaling
+  (reset! screen-state (calculate-letterbox-scale))
+
   (rct/set-target-fps! 60)
   ;; Enable debug stats - press F1 to toggle
   (debug-stats/enable!))
@@ -433,6 +512,9 @@
         (reset! game-atom game)
         (draw game)
         (recur))))
+  ;; Cleanup
+  (when @render-target
+    (ext/unload-render-texture! @render-target))
   (rcw/close-window!))
 
 (comment

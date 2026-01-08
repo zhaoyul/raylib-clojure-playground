@@ -121,3 +121,22 @@
    :extra 4
    :forward 5
    :back 6})
+
+;; System/Window config flags
+(def config-flag
+  {:vsync-hint              0x00000040  ; Set to try enabling V-Sync on GPU
+   :fullscreen-mode         0x00000002  ; Set to run program in fullscreen
+   :window-resizable        0x00000004  ; Set to allow resizable window
+   :window-undecorated      0x00000008  ; Set to disable window decoration
+   :window-hidden           0x00000080  ; Set to hide window
+   :window-minimized        0x00000200  ; Set to minimize window
+   :window-maximized        0x00000400  ; Set to maximize window
+   :window-unfocused        0x00000800  ; Set to window non focused
+   :window-topmost          0x00001000  ; Set to window always on top
+   :window-always-run       0x00000100  ; Set to allow windows running while minimized
+   :window-transparent      0x00000010  ; Set to allow transparent framebuffer
+   :window-highdpi          0x00002000  ; Set to support HighDPI
+   :window-mouse-passthrough 0x00004000 ; Set to support mouse passthrough
+   :borderless-windowed-mode 0x00008000 ; Set to run program in borderless windowed mode
+   :msaa-4x-hint            0x00000020  ; Set to try enabling MSAA 4X
+   :interlaced-hint         0x00010000}); Set to try enabling interlaced video format

@@ -142,7 +142,7 @@
           font-size 14
           x 10
           y 10
-          
+
           ;; Build stats lines
           lines [(format-stat "FPS" fps)
                  (format-stat "Frame" (format "%.2f" frame-time-ms) "ms")

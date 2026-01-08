@@ -35,3 +35,9 @@
     [:height ::mem/int]
     [:mipmaps ::mem/int]
     [:format ::mem/int]]])
+
+(defalias ::render-texture
+  [::mem/struct
+   [[:id ::mem/int]
+    [:texture ::texture]
+    [:depth ::texture]]])

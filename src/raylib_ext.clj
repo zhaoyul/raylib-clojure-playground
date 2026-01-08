@@ -52,3 +52,34 @@
   {:arglists '([center1 radius1 center2 radius2])}
   "CheckCollisionCircles"
   [::rs/vector-2 ::mem/float ::rs/vector-2 ::mem/float] ::mem/byte)
+
+;; RenderTexture functions
+(defcfn load-render-texture!
+  "Load texture for rendering (framebuffer)"
+  {:arglists '([width height])}
+  "LoadRenderTexture"
+  [::mem/int ::mem/int] ::rs/render-texture)
+
+(defcfn unload-render-texture!
+  "Unload render texture from GPU memory (VRAM)"
+  {:arglists '([target])}
+  "UnloadRenderTexture"
+  [::rs/render-texture] ::mem/void)
+
+(defcfn begin-texture-mode!
+  "Begin drawing to render texture"
+  {:arglists '([target])}
+  "BeginTextureMode"
+  [::rs/render-texture] ::mem/void)
+
+(defcfn end-texture-mode!
+  "End drawing to render texture"
+  "EndTextureMode"
+  [] ::mem/void)
+
+;; Advanced texture drawing
+(defcfn draw-texture-pro!
+  "Draw a part of a texture defined by a rectangle with 'pro' parameters"
+  {:arglists '([texture source dest origin rotation tint])}
+  "DrawTexturePro"
+  [::rs/texture ::rectangle ::rectangle ::rs/vector-2 ::mem/float ::rs/color] ::mem/void)

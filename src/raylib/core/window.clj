@@ -67,4 +67,53 @@
   "GetScreenHeight"
   [] ::mem/int)
 
+(defcfn get-render-width
+  "Get current render width (considers HiDPI)"
+  "GetRenderWidth"
+  [] ::mem/int)
+
+(defcfn get-render-height
+  "Get current render height (considers HiDPI)"
+  "GetRenderHeight"
+  [] ::mem/int)
+
+(defcfn set-config-flags!
+  "Setup init configuration flags (view FLAGS)"
+  {:arglists '([flags])}
+  "SetConfigFlags"
+  [::mem/int] ::mem/void)
+
+(defcfn toggle-fullscreen!
+  "Toggle window state: fullscreen/windowed (only PLATFORM_DESKTOP)"
+  "ToggleFullscreen"
+  [] ::mem/void)
+
+(defcfn toggle-borderless-windowed!
+  "Toggle window state: borderless windowed (only PLATFORM_DESKTOP)"
+  "ToggleBorderlessWindowed"
+  [] ::mem/void)
+
+(defcfn set-window-size!
+  "Set window dimensions"
+  {:arglists '([width height])}
+  "SetWindowSize"
+  [::mem/int ::mem/int] ::mem/void)
+
+(defcfn get-current-monitor
+  "Get current connected monitor"
+  "GetCurrentMonitor"
+  [] ::mem/int)
+
+(defcfn get-monitor-width
+  "Get specified monitor width (current video mode used by monitor)"
+  {:arglists '([monitor])}
+  "GetMonitorWidth"
+  [::mem/int] ::mem/int)
+
+(defcfn get-monitor-height
+  "Get specified monitor height (current video mode used by monitor)"
+  {:arglists '([monitor])}
+  "GetMonitorHeight"
+  [::mem/int] ::mem/int)
+
 ; ...
