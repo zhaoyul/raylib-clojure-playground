@@ -1,6 +1,7 @@
 (ns examples.asteroids
   (:require
    [raylib.core.window :as rcw]
+   [raylib.nrepl :as nrepl]
    [raylib.core.timing :as rct]
    [raylib.core.drawing :as rcd]
    [raylib.core.keyboard :as rck]
@@ -308,7 +309,7 @@
 
   ;; Handle F11 fullscreen toggle
   (when (rck/is-key-pressed? (:f11 enums/keyboard-key))
-    (rcw/toggle-fullscreen!)
+    (rcw/toggle-borderless-windowed!)
     (reset! screen-state (calculate-letterbox-scale)))
 
   ;; Update screen state on resize
@@ -396,14 +397,14 @@
     (draw-bullet bullet)))
 
 (defn draw-dead []
-  (let [text "dead"
+  (let [text "DEAD"
         size 48
         width (ext/measure-text text size)]
-    (rtd/draw-text! text (int (- (quot WIDTH 2) (/ width 2))) (- HEIGHT 100) size colors/red))
+    (rtd/draw-text! text (int (- (quot WIDTH 2) (/ width 2))) (int (- (/ HEIGHT 2) 40)) size colors/red))
   (let [text "press SPACE to restart"
         size 16
         width (ext/measure-text text size)]
-    (rtd/draw-text! text (int (- (quot WIDTH 2) (/ width 2))) (- HEIGHT 50) size colors/white)))
+    (rtd/draw-text! text (int (- (quot WIDTH 2) (/ width 2))) (int (+ (/ HEIGHT 2) 20)) size colors/white)))
 
 (defn draw-game-content [game]
   (rcd/clear-background! colors/black)
@@ -495,16 +496,17 @@
   (reset! render-target (ext/load-render-texture! VIRTUAL_WIDTH VIRTUAL_HEIGHT))
 
   ;; Start in true fullscreen (hides menu bar)
-  (rcw/toggle-fullscreen!)
+  (rcw/toggle-borderless-windowed!)
 
   ;; Calculate initial letterbox scaling
   (reset! screen-state (calculate-letterbox-scale))
 
-  (rct/set-target-fps! 60)
+  ;(rct/set-target-fps! 60)
   ;; Enable debug stats - press F1 to toggle
   (debug-stats/enable!))
 
 (defn -main [& args]
+  (nrepl/start {:port 7888})
   (init)
   (loop []
     (let [game (tick (update-fps @game-atom))]
