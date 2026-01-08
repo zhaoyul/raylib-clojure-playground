@@ -15,6 +15,12 @@
     [:height ::mem/float]]])
 
 ;; Drawing functions
+(defcfn draw-line!
+  "Draw a line"
+  {:arglists '([start-x start-y end-x end-y color])}
+  "DrawLine"
+  [::mem/int ::mem/int ::mem/int ::mem/int ::rs/color] ::mem/void)
+
 (defcfn draw-circle!
   "Draw a color-filled circle"
   {:arglists '([center-x center-y radius color])}
