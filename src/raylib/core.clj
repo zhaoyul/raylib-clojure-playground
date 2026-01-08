@@ -30,9 +30,8 @@
         search-dirs (concat
                      ;; java.library.path directories (for packaged apps)
                      (when lib-path (str/split lib-path (re-pattern File/pathSeparator)))
-                     ;; Development paths
-                     [(str cwd "/vendor/raylib-clj/libs")
-                      (str cwd "/libs")])]
+                     ;; Development path
+                     [(str cwd "/libs")])]
     (when lib-name
       (->> search-dirs
            (map #(str % "/" lib-name))

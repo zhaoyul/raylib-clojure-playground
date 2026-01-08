@@ -10,18 +10,14 @@
                  ;; insn is a dependency of coffi
                  [insn/insn "0.5.4"]]
 
-  ;; Include raylib-clj source from local checkout
-  ;; Run: git clone https://github.com/kiranshila/raylib-clj.git vendor/raylib-clj
-  :source-paths ["src" "vendor/raylib-clj/src"]
+  :source-paths ["src"]
   :resource-paths ["resources"]
 
   ;; JVM options for native access
-  ;; Note: The bundled raylib library is loaded automatically from vendor/raylib-clj/libs/
-  ;; The java.library.path is kept as fallback for system library on other platforms
+  ;; The bundled raylib library is loaded from libs/
   :jvm-opts ["--enable-native-access=ALL-UNNAMED"
              "-XstartOnFirstThread"  ; Required for macOS GUI/OpenGL
-             ;; Fallback library path (used if bundled lib not found)
-             "-Djava.library.path=/opt/homebrew/opt/raylib/lib:/opt/homebrew/lib:/usr/local/lib:/usr/lib"]
+             "-Djava.library.path=libs:/opt/homebrew/opt/raylib/lib:/opt/homebrew/lib:/usr/local/lib:/usr/lib"]
 
   :profiles {:dev {:dependencies [[nrepl/nrepl "1.0.0"]
                                   [cider/cider-nrepl "0.40.0"]
