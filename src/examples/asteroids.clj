@@ -9,7 +9,8 @@
    [raylib.colors :as colors]
    [raylib.enums :as enums]
    [raylib-ext :as ext]
-   [debug-stats]))
+   [debug-stats])
+  (:gen-class))
 
 ;; CREDITS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; All the math and helper functions for this asteroids impl are from

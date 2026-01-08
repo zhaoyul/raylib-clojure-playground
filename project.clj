@@ -29,6 +29,7 @@
                                   [integrant/repl "0.3.3"]
                                   [refactor-nrepl/refactor-nrepl "3.9.0"]]}}
 
-  :main ^:skip-aot examples.hello-world
+  :main examples.asteroids
+  :aot [examples.asteroids]
 
-  :repl-options {:init-ns examples.hello-world})
+  :repl-options {:init-ns examples.asteroids})
