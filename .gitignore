@@ -1,0 +1,20 @@
+# Leiningen
+target/
+pom.xml
+pom.xml.asc
+.lein-*
+
+# Clojure
+.nrepl-port
+.cpcache/
+*.jar
+*.class
+
+# IDE
+.idea/
+*.iml
+.clj-kondo/
+.lsp/
+
+# OS
+.DS_Store
