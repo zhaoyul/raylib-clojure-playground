@@ -2,17 +2,17 @@
   "Vampire Survivors Clone - A top-down survival roguelike
    Survive waves of enemies, auto-attack with weapons, collect XP, level up!"
   (:require
-   [raylib.core.window :as rcw]
-   [raylib.nrepl :as nrepl]
-   [raylib.core.timing :as rct]
-   [raylib.core.drawing :as rcd]
-   [raylib.core.keyboard :as rck]
-   [raylib.text.drawing :as rtd]
-   [raylib.colors :as colors]
-   [raylib.enums :as enums]
-   [raylib.shapes.basic :as rsb]
-   [raylib-ext :as ext]
-   [debug-stats])
+    [raylib.core.window :as rcw]
+    [raylib.nrepl :as nrepl]
+    [raylib.core.timing :as rct]
+    [raylib.core.drawing :as rcd]
+    [raylib.core.keyboard :as rck]
+    [raylib.text.drawing :as rtd]
+    [raylib.colors :as colors]
+    [raylib.enums :as enums]
+    [raylib.shapes.basic :as rsb]
+    [raylib-ext :as ext]
+    [debug-stats])
   (:gen-class))
 
 ;; ============================================================================
@@ -27,14 +27,14 @@
 
 ;; Player constants
 (def PLAYER_SIZE 24)
-(def PLAYER_BASE_SPEED 150.0)
+(def PLAYER_BASE_SPEED 520.0)
 (def PLAYER_BASE_HP 100)
 (def PLAYER_PICKUP_RADIUS 50.0)
 (def PLAYER_INVINCIBILITY_TIME 1.0)
 
 ;; Enemy spawn settings
-(def SPAWN_DISTANCE 600)  ;; Distance from player to spawn enemies
-(def BASE_SPAWN_INTERVAL 2.0)  ;; Seconds between spawn waves
+(def SPAWN_DISTANCE 600)                                    ;; Distance from player to spawn enemies
+(def BASE_SPAWN_INTERVAL 2.0)                               ;; Seconds between spawn waves
 (def BASE_ENEMIES_PER_SPAWN 3)
 
 ;; XP and leveling
@@ -42,8 +42,8 @@
 (def XP_LEVEL_MULTIPLIER 1.3)
 
 ;; Game timing
-(def BOSS_TIME_1 (* 10 60))  ;; 10 minutes in frames at 60fps
-(def BOSS_TIME_2 (* 20 60))  ;; 20 minutes
+(def BOSS_TIME_1 (* 10 60))                                 ;; 10 minutes in frames at 60fps
+(def BOSS_TIME_2 (* 20 60))                                 ;; 20 minutes
 
 ;; Visual settings
 (def DAMAGE_NUMBER_LIFETIME 1.0)
@@ -108,8 +108,8 @@
     :base-projectile-count 1
     :max-level 8
     :attack-type :melee-arc
-    :pierce -1}  ;; -1 = infinite pierce
-   
+    :pierce -1}                                             ;; -1 = infinite pierce
+
    :magic-wand
    {:name "Magic Wand"
     :description "Fires at the nearest enemy"
@@ -121,7 +121,7 @@
     :attack-type :projectile-homing
     :pierce 1
     :projectile-speed 400}
-   
+
    :knife
    {:name "Knife"
     :description "Fires quickly in the faced direction"
@@ -133,7 +133,7 @@
     :attack-type :projectile-directional
     :pierce 1
     :projectile-speed 500}
-   
+
    :garlic
    {:name "Garlic"
     :description "Damages nearby enemies and reduces their speed"
@@ -145,7 +145,7 @@
     :attack-type :aura
     :pierce -1
     :aura-radius 80}
-   
+
    :bible
    {:name "King Bible"
     :description "Orbits around the character"
@@ -159,7 +159,7 @@
     :orbit-radius 100
     :orbit-duration 3.0
     :orbit-speed 3.0}
-   
+
    :cross
    {:name "Cross"
     :description "Thrown weapon that returns"
@@ -172,7 +172,7 @@
     :pierce -1
     :projectile-speed 350
     :return-distance 300}
-   
+
    :axe
    {:name "Axe"
     :description "Thrown high, falls in an arc"
@@ -208,49 +208,49 @@
     :max-level 5
     :stat :damage-multiplier
     :bonus-per-level 0.1}
-   
+
    :armor
    {:name "Armor"
     :description "+1 armor per level"
     :max-level 5
     :stat :armor
     :bonus-per-level 1}
-   
+
    :wings
    {:name "Wings"
     :description "+10% movement speed per level"
     :max-level 5
     :stat :move-speed
     :bonus-per-level 0.1}
-   
+
    :hollow-heart
    {:name "Hollow Heart"
     :description "+20% max HP per level"
     :max-level 5
     :stat :max-hp
     :bonus-per-level 0.2}
-   
+
    :candelabrador
    {:name "Candelabrador"
     :description "+10% area per level"
     :max-level 5
     :stat :area
     :bonus-per-level 0.1}
-   
+
    :bracer
    {:name "Bracer"
     :description "+10% projectile speed per level"
     :max-level 5
     :stat :projectile-speed
     :bonus-per-level 0.1}
-   
+
    :empty-tome
    {:name "Empty Tome"
     :description "-8% cooldown per level"
     :max-level 5
     :stat :cooldown-reduction
     :bonus-per-level 0.08}
-   
+
    :attractorb
    {:name "Attractorb"
     :description "+30% pickup radius per level"
@@ -271,7 +271,7 @@
     :xp-value 1
     :size 20
     :color {:r 100 :g 150 :b 100 :a 255}}
-   
+
    :bat
    {:name "Bat"
     :base-hp 5
@@ -280,7 +280,7 @@
     :xp-value 1
     :size 15
     :color {:r 80 :g 60 :b 80 :a 255}}
-   
+
    :skeleton
    {:name "Skeleton"
     :base-hp 30
@@ -289,7 +289,7 @@
     :xp-value 3
     :size 22
     :color {:r 200 :g 200 :b 180 :a 255}}
-   
+
    :ghoul
    {:name "Ghoul"
     :base-hp 80
@@ -298,7 +298,7 @@
     :xp-value 5
     :size 28
     :color {:r 60 :g 80 :b 60 :a 255}}
-   
+
    :elite-zombie
    {:name "Elite Zombie"
     :base-hp 100
@@ -308,7 +308,7 @@
     :size 30
     :color {:r 150 :g 200 :b 150 :a 255}
     :elite? true}
-   
+
    :boss-giant
    {:name "Giant"
     :base-hp 1000
@@ -318,7 +318,7 @@
     :size 60
     :color {:r 200 :g 50 :b 50 :a 255}
     :boss? true}
-   
+
    :boss-reaper
    {:name "Reaper"
     :base-hp 2000
@@ -353,14 +353,14 @@
 (defn make-player []
   {:position {:x (/ WORLD_WIDTH 2) :y (/ WORLD_HEIGHT 2)}
    :velocity {:x 0 :y 0}
-   :facing {:x 1 :y 0}  ;; Direction player is facing
+   :facing {:x 1 :y 0}                                      ;; Direction player is facing
    :health PLAYER_BASE_HP
    :max-health PLAYER_BASE_HP
    :level 1
    :xp 0
    :xp-to-next BASE_XP_TO_LEVEL
    :invincibility-timer 0
-   
+
    ;; Player stats (base values, modified by passives)
    :stats {:move-speed 1.0
            :damage-multiplier 1.0
@@ -370,7 +370,7 @@
            :cooldown-reduction 1.0
            :projectile-speed 1.0
            :max-hp 1.0}
-   
+
    ;; Weapons and passives
    :weapons [{:type :whip :level 1 :cooldown-timer 0}]
    :passives []})
@@ -381,7 +381,7 @@
 
 (defn init-game []
   (let [player (make-player)]
-    {:state :playing  ;; :playing :paused :level-up :game-over
+    {:state :playing                                        ;; :playing :paused :level-up :game-over
      :player player
      :camera (make-camera player)
      :enemies []
@@ -421,15 +421,15 @@
                     :max-hp 1.0}
         passives (:passives player)]
     (reduce
-     (fn [stats passive]
-       (let [passive-def (get passive-definitions (:type passive))
-             stat-key (:stat passive-def)
-             bonus (* (:level passive) (:bonus-per-level passive-def))]
-         (if (= stat-key :armor)
-           (update stats stat-key + bonus)
-           (update stats stat-key + bonus))))
-     base-stats
-     passives)))
+      (fn [stats passive]
+        (let [passive-def (get passive-definitions (:type passive))
+              stat-key (:stat passive-def)
+              bonus (* (:level passive) (:bonus-per-level passive-def))]
+          (if (= stat-key :armor)
+            (update stats stat-key + bonus)
+            (update stats stat-key + bonus))))
+      base-stats
+      passives)))
 
 (defn get-effective-pickup-radius [player]
   (* PLAYER_PICKUP_RADIUS (get-in player [:stats :pickup-radius])))
@@ -453,7 +453,7 @@
                 (get player-stats :damage-multiplier 1.0))
      :cooldown (* (:base-cooldown weapon-def)
                   (:cooldown level-bonus)
-                  (- 2.0 cooldown-reduction))  ;; Convert reduction to multiplier
+                  (- 2.0 cooldown-reduction))               ;; Convert reduction to multiplier
      :area (* (:base-area weapon-def)
               (:area level-bonus)
               (get player-stats :area 1.0))
@@ -477,7 +477,7 @@
 
 (defn create-enemy [enemy-type position game-time]
   (let [enemy-def (get enemy-definitions enemy-type)
-        time-multiplier (+ 1.0 (* (/ game-time 60.0) 0.02))]  ;; Enemies scale over time
+        time-multiplier (+ 1.0 (* (/ game-time 60.0) 0.02))] ;; Enemies scale over time
     {:id (next-id)
      :type enemy-type
      :position position
@@ -505,9 +505,9 @@
             enemy-types (:enemies current-wave)
             new-enemies (vec (for [_ (range enemies-to-spawn)]
                                (create-enemy
-                                (rand-nth enemy-types)
-                                (spawn-position-around-player (:position player))
-                                game-time)))]
+                                 (rand-nth enemy-types)
+                                 (spawn-position-around-player (:position player))
+                                 game-time)))]
         (-> game
             (update :enemies into new-enemies)
             (assoc :spawn-timer 0)))
@@ -522,14 +522,14 @@
                                               (spawn-position-around-player (:position player))
                                               game-time))
           (assoc :boss-spawned-10 true))
-      
+
       (and (>= game-time BOSS_TIME_2) (not boss-spawned-20))
       (-> game
           (update :enemies conj (create-enemy :boss-reaper
                                               (spawn-position-around-player (:position player))
                                               game-time))
           (assoc :boss-spawned-20 true))
-      
+
       :else game)))
 
 ;; ============================================================================
@@ -570,12 +570,12 @@
 (defn find-nearest-enemy [position enemies]
   (when (seq enemies)
     (reduce
-     (fn [nearest enemy]
-       (let [dist-nearest (distance position (:position nearest))
-             dist-enemy (distance position (:position enemy))]
-         (if (< dist-enemy dist-nearest) enemy nearest)))
-     (first enemies)
-     (rest enemies))))
+      (fn [nearest enemy]
+        (let [dist-nearest (distance position (:position nearest))
+              dist-enemy (distance position (:position enemy))]
+          (if (< dist-enemy dist-nearest) enemy nearest)))
+      (first enemies)
+      (rest enemies))))
 
 (defn fire-whip [player weapon-stats]
   (let [pos (:position player)
@@ -765,21 +765,21 @@
   (let [weapons (:weapons player)
         player-stats (:stats player)]
     (reduce
-     (fn [[player new-projectiles] weapon-idx]
-       (let [weapon (get weapons weapon-idx)
-             weapon-stats (get-weapon-stats weapon player-stats)
-             new-timer (- (:cooldown-timer weapon) dt)]
-         (if (<= new-timer 0)
-           ;; Fire weapon
-           (let [projectiles (fire-weapon weapon player enemies)
-                 updated-weapon (assoc weapon :cooldown-timer (:cooldown weapon-stats))]
-             [(assoc-in player [:weapons weapon-idx] updated-weapon)
-              (into new-projectiles projectiles)])
-           ;; Just update timer
-           [(assoc-in player [:weapons weapon-idx :cooldown-timer] new-timer)
-            new-projectiles])))
-     [player []]
-     (range (count weapons)))))
+      (fn [[player new-projectiles] weapon-idx]
+        (let [weapon (get weapons weapon-idx)
+              weapon-stats (get-weapon-stats weapon player-stats)
+              new-timer (- (:cooldown-timer weapon) dt)]
+          (if (<= new-timer 0)
+            ;; Fire weapon
+            (let [projectiles (fire-weapon weapon player enemies)
+                  updated-weapon (assoc weapon :cooldown-timer (:cooldown weapon-stats))]
+              [(assoc-in player [:weapons weapon-idx] updated-weapon)
+               (into new-projectiles projectiles)])
+            ;; Just update timer
+            [(assoc-in player [:weapons weapon-idx :cooldown-timer] new-timer)
+             new-projectiles])))
+      [player []]
+      (range (count weapons)))))
 
 (defn update-player [game dt]
   (let [{:keys [player enemies]} game
@@ -803,13 +803,13 @@
         kb (:knockback enemy)
         kb-decay 0.9
         new-kb (vec-scale kb kb-decay)
-        
+
         ;; Movement towards player
         move-vel (vec-scale dir (:speed enemy))
         total-vel (vec-add move-vel new-kb)
-        
+
         new-pos (vec-add (:position enemy) (vec-scale total-vel dt))
-        
+
         ;; Update hit flash
         new-flash (max 0 (- (:hit-flash enemy) dt))]
     (-> enemy
@@ -835,7 +835,7 @@
       (-> proj
           (assoc :position (:position player))
           (update :lifetime - dt))
-      
+
       ;; Orbiting projectile (bible)
       orbit?
       (let [new-angle (+ (:orbit-angle proj) (* (:orbit-speed proj 3.0) dt))
@@ -845,7 +845,7 @@
             (assoc :position (vec-add (:position player) orbit-pos))
             (assoc :orbit-angle new-angle)
             (update :lifetime - dt)))
-      
+
       ;; Arc projectile (axe) - apply gravity
       arc?
       (let [new-vel-y (+ (:y (:velocity proj)) (* (:gravity proj) dt))
@@ -855,7 +855,7 @@
             (assoc :velocity new-vel)
             (assoc :position new-pos)
             (update :lifetime - dt)))
-      
+
       ;; Boomerang projectile (cross)
       boomerang?
       (let [dist (distance (:start-pos proj) (:position proj))
@@ -870,7 +870,7 @@
             (assoc :position new-pos)
             (assoc :returning? returning?)
             (update :lifetime - dt)))
-      
+
       ;; Normal projectile
       :else
       (let [new-pos (vec-add (:position proj) (vec-scale (:velocity proj) dt))]
@@ -954,48 +954,48 @@
               ;; Process this projectile against all enemies using filter-based approach
               [updated-proj surviving-enemies dmg-nums gems killed]
               (reduce
-               (fn [[p surviving dmg-nums gems killed] enemy]
-                 (let [enemy-id (:id enemy)]
-                   (if (and (not (contains? (:hit-enemies p) enemy-id))
-                            (check-circle-collision proj-pos proj-radius
-                                                    (:position enemy) (:size enemy)))
-                     ;; Hit!
-                     (let [damage (:damage p)
-                           new-enemy-health (- (:health enemy) damage)
-                           kb-dir (normalize (vec-sub (:position enemy) player-pos))
-                           kb-force (vec-scale kb-dir 200)
-                           
-                           ;; Update projectile pierce
-                           new-pierce (if (= (:pierce p) -1)
-                                        -1
-                                        (dec (:pierce p)))
-                           updated-p (-> p
-                                         (update :hit-enemies conj enemy-id)
-                                         (assoc :pierce new-pierce))
-                           
-                           ;; Create damage number
-                           dmg-num (create-damage-number (:position enemy) damage false)]
-                       (if (<= new-enemy-health 0)
-                         ;; Enemy died - don't add to surviving, create gem
-                         (let [gem (create-xp-gem (:position enemy) (:xp-value enemy))]
-                           [updated-p
-                            surviving
-                            (conj dmg-nums dmg-num)
-                            (conj gems gem)
-                            (inc killed)])
-                         ;; Enemy damaged - add updated enemy to surviving
-                         [updated-p
-                          (conj surviving (-> enemy
-                                              (assoc :health new-enemy-health)
-                                              (update :knockback vec-add kb-force)
-                                              (assoc :hit-flash HIT_FLASH_DURATION)))
-                          (conj dmg-nums dmg-num)
-                          gems
-                          killed]))
-                     ;; No collision - keep enemy as-is
-                     [p (conj surviving enemy) dmg-nums gems killed])))
-               [proj [] new-damage-numbers new-xp-gems killed-count]
-               remaining-enemies)
+                (fn [[p surviving dmg-nums gems killed] enemy]
+                  (let [enemy-id (:id enemy)]
+                    (if (and (not (contains? (:hit-enemies p) enemy-id))
+                             (check-circle-collision proj-pos proj-radius
+                                                     (:position enemy) (:size enemy)))
+                      ;; Hit!
+                      (let [damage (:damage p)
+                            new-enemy-health (- (:health enemy) damage)
+                            kb-dir (normalize (vec-sub (:position enemy) player-pos))
+                            kb-force (vec-scale kb-dir 200)
+
+                            ;; Update projectile pierce
+                            new-pierce (if (= (:pierce p) -1)
+                                         -1
+                                         (dec (:pierce p)))
+                            updated-p (-> p
+                                          (update :hit-enemies conj enemy-id)
+                                          (assoc :pierce new-pierce))
+
+                            ;; Create damage number
+                            dmg-num (create-damage-number (:position enemy) damage false)]
+                        (if (<= new-enemy-health 0)
+                          ;; Enemy died - don't add to surviving, create gem
+                          (let [gem (create-xp-gem (:position enemy) (:xp-value enemy))]
+                            [updated-p
+                             surviving
+                             (conj dmg-nums dmg-num)
+                             (conj gems gem)
+                             (inc killed)])
+                          ;; Enemy damaged - add updated enemy to surviving
+                          [updated-p
+                           (conj surviving (-> enemy
+                                               (assoc :health new-enemy-health)
+                                               (update :knockback vec-add kb-force)
+                                               (assoc :hit-flash HIT_FLASH_DURATION)))
+                           (conj dmg-nums dmg-num)
+                           gems
+                           killed]))
+                      ;; No collision - keep enemy as-is
+                      [p (conj surviving enemy) dmg-nums gems killed])))
+                [proj [] new-damage-numbers new-xp-gems killed-count]
+                remaining-enemies)
               ;; Check if projectile should be removed (pierce exhausted)
               keep-proj? (or (= (:pierce updated-proj) -1)
                              (> (:pierce updated-proj) 0))
@@ -1018,9 +1018,9 @@
     (if invincible?
       game
       (let [colliding-enemy (first (filter
-                                    #(check-circle-collision player-pos (/ PLAYER_SIZE 2)
-                                                             (:position %) (:size %))
-                                    enemies))]
+                                     #(check-circle-collision player-pos (/ PLAYER_SIZE 2)
+                                                              (:position %) (:size %))
+                                     enemies))]
         (if colliding-enemy
           (let [raw-damage (:damage colliding-enemy)
                 armor (get-in player [:stats :armor] 0)
@@ -1041,12 +1041,12 @@
         pickup-radius (get-effective-pickup-radius player)
         [collected remaining]
         (reduce
-         (fn [[collected remaining] gem]
-           (if (< (distance player-pos (:position gem)) (/ pickup-radius 2))
-             [(+ collected (:xp-value gem)) remaining]
-             [collected (conj remaining gem)]))
-         [0 []]
-         xp-gems)]
+          (fn [[collected remaining] gem]
+            (if (< (distance player-pos (:position gem)) (/ pickup-radius 2))
+              [(+ collected (:xp-value gem)) remaining]
+              [collected (conj remaining gem)]))
+          [0 []]
+          xp-gems)]
     (if (> collected 0)
       (-> game
           (update-in [:player :xp] + collected)
@@ -1063,7 +1063,7 @@
 (defn generate-level-up-choices [player]
   (let [current-weapons (set (map :type (:weapons player)))
         current-passives (into {} (map (fn [p] [(:type p) (:level p)]) (:passives player)))
-        
+
         ;; Available weapon upgrades
         weapon-upgrades (for [w (:weapons player)
                               :let [wdef (get weapon-definitions (:type w))]
@@ -1071,14 +1071,14 @@
                           {:type :weapon-upgrade
                            :weapon-type (:type w)
                            :current-level (:level w)})
-        
+
         ;; Available new weapons
         new-weapons (for [[wtype _wdef] weapon-definitions
                           :when (and (not (contains? current-weapons wtype))
                                      (< (count current-weapons) 6))]
                       {:type :new-weapon
                        :weapon-type wtype})
-        
+
         ;; Available passive upgrades
         passive-upgrades (for [[ptype plevel] current-passives
                                :let [pdef (get passive-definitions ptype)]
@@ -1086,13 +1086,13 @@
                            {:type :passive-upgrade
                             :passive-type ptype
                             :current-level plevel})
-        
+
         ;; Available new passives
         new-passives (for [[ptype _pdef] passive-definitions
                            :when (not (contains? current-passives ptype))]
                        {:type :new-passive
                         :passive-type ptype})
-        
+
         all-choices (concat weapon-upgrades new-weapons passive-upgrades new-passives)]
     (vec (take 4 (shuffle all-choices)))))
 
@@ -1119,25 +1119,25 @@
             (case (:type choice)
               :weapon-upgrade
               (let [weapon-idx (first (keep-indexed
-                                       (fn [i w] (when (= (:type w) (:weapon-type choice)) i))
-                                       (:weapons player)))]
+                                        (fn [i w] (when (= (:type w) (:weapon-type choice)) i))
+                                        (:weapons player)))]
                 (update-in player [:weapons weapon-idx :level] inc))
-              
+
               :new-weapon
               (update player :weapons conj {:type (:weapon-type choice)
                                             :level 1
                                             :cooldown-timer 0})
-              
+
               :passive-upgrade
               (let [passive-idx (first (keep-indexed
-                                        (fn [i p] (when (= (:type p) (:passive-type choice)) i))
-                                        (:passives player)))]
+                                         (fn [i p] (when (= (:type p) (:passive-type choice)) i))
+                                         (:passives player)))]
                 (update-in player [:passives passive-idx :level] inc))
-              
+
               :new-passive
               (update player :passives conj {:type (:passive-type choice)
                                              :level 1})
-              
+
               player)]
         (-> game
             (assoc :player new-player)
@@ -1213,23 +1213,23 @@
 
 (defn update-game [game]
   (debug-stats/update!)
-  
+
   ;; Handle F11 fullscreen toggle
   (when (rck/is-key-pressed? (:f11 enums/keyboard-key))
     (rcw/toggle-borderless-windowed!))
-  
+
   (let [dt (rct/get-frame-time)]
     (case (:state game)
       :playing
       (if (rck/is-key-pressed? (:escape enums/keyboard-key))
         (assoc game :state :paused)
         (update-playing game dt))
-      
+
       :paused
       (if (rck/is-key-pressed? (:escape enums/keyboard-key))
         (assoc game :state :playing)
         game)
-      
+
       :level-up
       (let [choice-key (cond
                          (rck/is-key-pressed? (:one enums/keyboard-key)) 0
@@ -1240,12 +1240,12 @@
         (if choice-key
           (apply-level-up-choice game choice-key)
           game))
-      
+
       :game-over
       (if (rck/is-key-pressed? (:enter enums/keyboard-key))
         (init-game)
         game)
-      
+
       game)))
 
 ;; ============================================================================
@@ -1268,17 +1268,17 @@
 
 (defn draw-background [camera]
   (let [grid-size 100
-        start-x (- (mod (:x camera) grid-size) grid-size)
-        start-y (- (mod (:y camera) grid-size) grid-size)
+        start-x (- (mod (:x camera) grid-size))
+        start-y (- (mod (:y camera) grid-size))
         dark-bg {:r 15 :g 15 :b 25 :a 255}
         grid-color {:r 30 :g 30 :b 45 :a 255}]
     ;; Background
-    (rsb/draw-rectangle! 0 0 SCREEN_WIDTH SCREEN_HEIGHT dark-bg)
+    #_(rsb/draw-rectangle! 0 0 SCREEN_WIDTH SCREEN_HEIGHT dark-bg)
     ;; Grid lines
     (doseq [x (range start-x (+ SCREEN_WIDTH grid-size) grid-size)]
-      (ext/draw-line! (int x) 0 (int x) SCREEN_HEIGHT grid-color))
+      (ext/draw-line! x 0 x SCREEN_HEIGHT grid-color))
     (doseq [y (range start-y (+ SCREEN_HEIGHT grid-size) grid-size)]
-      (ext/draw-line! 0 (int y) SCREEN_WIDTH (int y) grid-color))))
+      (ext/draw-line! 0 y SCREEN_WIDTH y grid-color))))
 
 ;; ============================================================================
 ;; DRAWING - ENTITIES
@@ -1383,7 +1383,6 @@
 ;; ============================================================================
 ;; DRAWING - UI
 ;; ============================================================================
-
 (defn draw-health-bar [player]
   (let [max-hp (get-effective-max-hp player)
         current-hp (max 0 (:health player))
@@ -1482,13 +1481,13 @@
 (defn draw-level-up-menu [choices _player]
   (let [overlay-color {:r 0 :g 0 :b 50 :a 200}]
     (rsb/draw-rectangle! 0 0 SCREEN_WIDTH SCREEN_HEIGHT overlay-color)
-    
+
     ;; Title
     (let [text "LEVEL UP!"
           size 50
           width (ext/measure-text text size)]
       (rtd/draw-text! text (int (- (/ SCREEN_WIDTH 2) (/ width 2))) 80 size colors/gold))
-    
+
     ;; Choices
     (let [choice-height 120
           choice-width 280
@@ -1512,22 +1511,22 @@
                   (let [wdef (get weapon-definitions (:weapon-type choice))]
                     [(:name wdef)
                      (str "Level " (:current-level choice) " -> " (inc (:current-level choice)))])
-                  
+
                   :new-weapon
                   (let [wdef (get weapon-definitions (:weapon-type choice))]
                     [(str "NEW: " (:name wdef))
                      (:description wdef)])
-                  
+
                   :passive-upgrade
                   (let [pdef (get passive-definitions (:passive-type choice))]
                     [(:name pdef)
                      (str "Level " (:current-level choice) " -> " (inc (:current-level choice)))])
-                  
+
                   :new-passive
                   (let [pdef (get passive-definitions (:passive-type choice))]
                     [(str "NEW: " (:name pdef))
                      (:description pdef)])
-                  
+
                   ["Unknown" ""])]
             (rtd/draw-text! name (int (+ x 10)) (int (+ y 45)) 20 colors/white)
             (rtd/draw-text! desc (int (+ x 10)) (int (+ y 75)) 14 colors/lightgray)))))))
@@ -1535,13 +1534,13 @@
 (defn draw-game-over [game]
   (let [overlay-color {:r 100 :g 0 :b 0 :a 200}]
     (rsb/draw-rectangle! 0 0 SCREEN_WIDTH SCREEN_HEIGHT overlay-color)
-    
+
     (let [text "GAME OVER"
           size 60
           width (ext/measure-text text size)]
       (rtd/draw-text! text (int (- (/ SCREEN_WIDTH 2) (/ width 2)))
                       (int (- (/ SCREEN_HEIGHT 2) 100)) size colors/red))
-    
+
     ;; Stats
     (let [stats-y (int (- (/ SCREEN_HEIGHT 2) 20))]
       (rtd/draw-text! (str "Time Survived: " (format-time (:game-time game)))
@@ -1550,7 +1549,7 @@
                       (int (- (/ SCREEN_WIDTH 2) 100)) (+ stats-y 35) 24 colors/white)
       (rtd/draw-text! (str "Enemies Killed: " (:enemies-killed game))
                       (int (- (/ SCREEN_WIDTH 2) 100)) (+ stats-y 70) 24 colors/white))
-    
+
     (let [text "Press ENTER to play again"
           size 24
           width (ext/measure-text text size)]
@@ -1563,40 +1562,41 @@
 
 (defn draw-game [game]
   (rcd/begin-drawing!)
-  
+
   (when game
     (let [{:keys [camera player enemies projectiles xp-gems damage-numbers state]} game]
+      (rcd/clear-background! colors/black)
       ;; Background
       (draw-background camera)
-      
+
       ;; Game entities (when not paused, still show them)
       (draw-xp-gems xp-gems camera)
       (draw-projectiles projectiles camera)
       (draw-enemies enemies camera)
       (draw-player player camera)
       (draw-damage-numbers damage-numbers camera)
-      
+
       ;; UI
       (draw-health-bar player)
       (draw-xp-bar player)
       (draw-timer (:game-time game))
       (draw-weapon-icons player)
       (draw-kill-counter (:enemies-killed game))
-      
+
       ;; State-specific overlays
       (case state
         :paused (draw-pause-menu)
         :level-up (draw-level-up-menu (:level-up-choices game) player)
         :game-over (draw-game-over game)
         nil)
-      
+
       ;; Controls info
       (rtd/draw-text! "WASD: Move | ESC: Pause | F1: Debug | F11: Fullscreen"
                       10 (- SCREEN_HEIGHT 25) 14 colors/darkgray)
-      
+
       ;; Debug stats
       (debug-stats/draw!)))
-  
+
   (rcd/end-drawing!))
 
 ;; ============================================================================
@@ -1606,22 +1606,21 @@
 (def game-state (atom nil))
 
 (defn -main [& _args]
-  (nrepl/start {:port 7889})
-  #_(rcw/set-config-flags! (bit-or (:window-resizable enums/config-flag)
-                                 (:vsync-hint enums/config-flag)))
+  (nrepl/start {:port 7888})
+  (rcw/set-config-flags :flag/window-resizable :flag/vsync-hint)
   (rcw/init-window! SCREEN_WIDTH SCREEN_HEIGHT "Vampire Survivors Clone")
   (rct/set-target-fps! 155)
-  
+
   (debug-stats/enable!)
-  
+
   (reset! game-state (init-game))
-  
+
   (loop []
     (when-not (rcw/window-should-close?)
       (swap! game-state update-game)
       (draw-game @game-state)
       (recur)))
-  
+
   (rcw/close-window!))
 
 (comment

@@ -638,7 +638,7 @@
 (def game-state (atom nil))
 
 (defn -main [& _args]
-  (nrepl/start {:port 7889})
+  (nrepl/start {:port 7888})
   (rcw/set-config-flags! (bit-or (:window-resizable enums/config-flag)
                                  (:vsync-hint enums/config-flag)))
   (rcw/init-window! SCREEN_WIDTH SCREEN_HEIGHT "classic game: tetris")

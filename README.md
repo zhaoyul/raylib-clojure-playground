@@ -1,175 +1,218 @@
 # Raylib Clojure Playground
 
-Experiments with [Raylib](https://www.raylib.com/) game development library in Clojure, using [raylib-clj](https://github.com/kiranshila/raylib-clj).
+A collection of game development experiments using Raylib in Clojure. This project uses coffi for FFI bindings to call Raylib's C library directly from Clojure.
 
-## Prerequisites
+## What You Need
 
-- **JDK 22+** (required for the modern Foreign Function API)
-- **Leiningen** build tool
+- JDK 22 or newer (required for the Foreign Function API)
+- Leiningen (Clojure build tool)
 
-### Installing JDK 22+
+## Installing the Prerequisites
 
-If you don't have JDK 22+, you can install it via:
+### JDK 22+
 
-**macOS:**
+Clojure runs on the JVM, so you need Java installed. This project requires JDK 22 or later because we use the new Foreign Function API to call native code.
+
+On macOS with Homebrew:
+
 ```bash
 brew install openjdk@22
 ```
 
-**Or use [SDKMAN](https://sdkman.io/):**
+On Linux (Ubuntu/Debian):
+
 ```bash
+sudo apt install openjdk-22-jdk
+```
+
+Alternatively, you can use SDKMAN which works on macOS, Linux, and Windows (WSL):
+
+```bash
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install java 22.0.2-open
 ```
 
-## Setup
+### Leiningen
 
-1. **Clone this repository:**
-   ```bash
-   git clone https://github.com/yourusername/raylib-clojure-playground.git
-   cd raylib-clojure-playground
-   ```
+Leiningen is the most common build tool for Clojure projects. It handles dependencies, runs your code, and manages the REPL.
 
-2. **Clone raylib-clj dependency:**
-   ```bash
-   git clone https://github.com/kiranshila/raylib-clj.git vendor/raylib-clj
-   cd vendor/raylib-clj && git checkout 71ea1997b5e7d49bfeb1b497cc4dc4079f08f0ee
-   cd ../..
-   ```
-
-3. **Sign the bundled library (macOS only):**
-   ```bash
-   codesign --force --sign - vendor/raylib-clj/libs/libraylib.5.5.0.dylib
-   ```
-
-## Bundled Raylib Library
-
-This project includes a bundled raylib 5.5 library for macOS (arm64/x64). The library is automatically loaded from `vendor/raylib-clj/libs/` based on your OS:
-
-| OS      | Library File              |
-|---------|---------------------------|
-| macOS   | `libraylib.5.5.0.dylib`   |
-| Linux   | `libraylib.so.5.5.0`      |
-| Windows | `raylib.dll`              |
-
-If the bundled library is not found, it falls back to the system-installed raylib.
-
-### Adding Libraries for Other Platforms
-
-To add support for Linux or Windows:
-1. Download or compile raylib for your platform
-2. Place the library in `vendor/raylib-clj/libs/`
-3. Name it according to the table above
-
-## Running
-
-Make sure to set `JAVA_HOME` to JDK 22+ before running:
+On macOS with Homebrew:
 
 ```bash
-# Set JAVA_HOME (adjust path for your system)
-export JAVA_HOME=/path/to/jdk-22
+brew install leiningen
+```
 
-# Run the hello world example
+On Linux, download the script directly:
+
+```bash
+curl -O https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+chmod +x lein
+sudo mv lein /usr/local/bin/
+lein  # This will download the rest automatically
+```
+
+On Windows, download the installer from the Leiningen website or use Chocolatey:
+
+```bash
+choco install lein
+```
+
+You can verify everything is working by running:
+
+```bash
+lein version
+```
+
+## Getting Started
+
+Clone this repository:
+
+```bash
+git clone https://github.com/yourusername/raylib-clojure-playground.git
+cd raylib-clojure-playground
+```
+
+Run one of the examples:
+
+```bash
 lein run
+```
 
-# Or run a specific example
+If you have multiple Java versions installed, you may need to set JAVA_HOME:
+
+```bash
+export JAVA_HOME=/path/to/jdk-22
+lein run
+```
+
+On macOS, the path is usually something like:
+
+```bash
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-22.jdk/Contents/Home
+```
+
+## IDE Setup
+
+Clojure development is best experienced with a good editor that supports REPL integration. Here are two popular options.
+
+### VS Code with Calva
+
+Calva is a free extension that turns VS Code into a capable Clojure editor.
+
+1. Install VS Code
+2. Open the Extensions panel and search for "Calva"
+3. Install the Calva extension
+4. Open this project folder in VS Code
+5. Press Ctrl+Alt+C followed by Ctrl+Alt+J (or Cmd on macOS) to start a REPL
+6. Select "Leiningen" when prompted
+
+Calva provides syntax highlighting, inline evaluation, and a connected REPL. You can evaluate code by placing your cursor on an expression and pressing Ctrl+Enter.
+
+### IntelliJ IDEA with Cursive
+
+Cursive is a plugin for IntelliJ IDEA that provides excellent Clojure support. It requires a license for commercial use but is free for open source and personal projects.
+
+1. Install IntelliJ IDEA (Community or Ultimate edition)
+2. Go to Settings/Preferences and then Plugins
+3. Search for "Cursive" and install it
+4. Restart the IDE
+5. Open this project (File, Open, select the project folder)
+6. Cursive will detect the project.clj file and set everything up
+
+To start a REPL in Cursive, right-click on project.clj and select "Run REPL for raylib-clojure-playground".
+
+## Running the Examples
+
+The main example runs Asteroids by default:
+
+```bash
+lein run
+```
+
+To run a specific example:
+
+```bash
 lein run -m examples.hello-world
 lein run -m examples.pong
 lein run -m examples.asteroids
-```
-
-**macOS example:**
-```bash
-JAVA_HOME=/Users/$(whoami)/Library/Java/JavaVirtualMachines/openjdk-22.0.2/Contents/Home lein run
+lein run -m examples.tetris
 ```
 
 ## REPL Development
 
+One of the best things about Clojure is the REPL workflow. You can change code while the game is running and see changes immediately.
+
+Start a REPL:
+
 ```bash
-JAVA_HOME=/path/to/jdk-22 lein repl
+lein repl
 ```
 
-Then in the REPL:
+Then load and run an example:
+
 ```clojure
-(start)  ; Start the game loop
+(require '[examples.asteroids :as game])
+(game/-main)
 ```
 
-## Debug Stats Overlay
+## Available Examples
 
-All examples include a debug stats overlay. Press **F1** to toggle it on/off.
-
-The overlay shows:
-- FPS and frame timing
-- JVM memory usage  
-- Frame count
-- Custom game-specific stats
-
-To add debug stats to your own game, see `src/debug_stats.clj`.
-
-## Examples
-
-- [Hello World](./src/examples/hello_world.clj) - Basic window with text
-- [Pong](./src/examples/pong.clj) - Classic Pong game
-- [Asteroids](./src/examples/asteroids.clj) - Asteroids clone
+- Hello World - A basic window with some text, good for testing your setup
+- Pong - The classic two-player paddle game
+- Asteroids - Shoot asteroids and try to survive
+- Tetris - The block-stacking puzzle game
 
 ## Controls
 
-### Hello World
-- **Q** - Exit
-- **F1** - Toggle debug stats
+Most examples share these common controls:
+
+- F1 toggles the debug overlay which shows FPS and memory usage
+- Q or closing the window exits the game
 
 ### Pong
-- **ENTER** - Start game
-- **W/S** - Player 1 paddle (left)
-- **K/J** - Player 2 paddle (right)
-- **F1** - Toggle debug stats
+
+- W and S move the left paddle
+- K and J move the right paddle
+- Enter starts the game
 
 ### Asteroids
-- **ENTER** - Start game
-- **Arrow Keys** - Rotate (LEFT/RIGHT), Thrust (UP/DOWN)
-- **SPACE** - Shoot / Restart when dead
-- **F1** - Toggle debug stats
 
-## Technical Notes
+- Left and Right arrow keys rotate the ship
+- Up arrow thrusts forward
+- Space shoots or restarts after dying
 
-### Why JDK 22+?
+## Bundled Libraries
 
-This project uses [coffi](https://github.com/IGJoshua/coffi) for Clojure FFI bindings. The newer coffi (1.0.x) requires JDK 22+ as it uses the stable `java.lang.foreign` API (graduated from incubator status).
+This project includes pre-built Raylib libraries for different platforms in the libs folder:
 
-### macOS Specific
+| Platform | Directory | Library |
+|----------|-----------|---------|
+| macOS | libs/macos | libraylib.5.5.0.dylib |
+| Linux 64-bit | libs/linux_amd64 | libraylib.so.5.5.0 |
+| Linux 32-bit | libs/linux_i386 | libraylib.a |
+| Windows 64-bit | libs/win64_msvc16 | raylib.dll |
+| Windows 32-bit | libs/win32_msvc16 | raylib.dll |
 
-The `-XstartOnFirstThread` JVM option is required on macOS for OpenGL/GLFW applications. This is already configured in `project.clj`.
+The correct library is loaded automatically based on your operating system.
 
-### Code Signing (macOS)
+### macOS Code Signing
 
-If you get a "code signature not valid" error, re-sign the bundled library:
+On macOS, you might see a security warning about the library. You can fix this by signing it locally:
+
 ```bash
-codesign --force --sign - vendor/raylib-clj/libs/libraylib.5.5.0.dylib
+codesign --force --sign - libs/macos/libraylib.5.5.0.dylib
 ```
 
-## Project Structure
+## Technical Details
 
-```
-├── project.clj              # Leiningen project file
-├── src/
-│   ├── debug_stats.clj      # Debug overlay plugin
-│   ├── raylib_ext.clj       # Extended raylib FFI bindings
-│   ├── native_loader.clj    # Native library loader
-│   └── examples/
-│       ├── hello_world.clj
-│       ├── pong.clj
-│       └── asteroids.clj
-└── vendor/
-    └── raylib-clj/          # raylib-clj library (git clone)
-        ├── src/raylib/      # Clojure bindings
-        └── libs/            # Bundled native libraries
-```
+### Why JDK 22?
 
-## Built With
+This project uses coffi for calling native C code from Clojure. The newer versions of coffi require JDK 22 because that is when the Foreign Function and Memory API became stable (it was in preview in earlier versions).
 
-- Clojure 1.11.1
-- Raylib 5.5
-- [raylib-clj](https://github.com/kiranshila/raylib-clj) - Clojure bindings for Raylib
-- [coffi](https://github.com/IGJoshua/coffi) 1.0.615 - Clojure Foreign Function Interface
+### macOS Threading
+
+OpenGL on macOS requires the main thread for rendering. The project.clj file includes the JVM flag -XstartOnFirstThread to handle this automatically.
 
 ## License
 
