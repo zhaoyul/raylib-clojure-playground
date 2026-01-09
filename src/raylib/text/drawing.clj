@@ -17,4 +17,5 @@
   "DrawText"
   [::mem/c-string ::mem/int ::mem/int ::mem/int ::rs/color] ::mem/void)
 
- ; ...
+(defmacro draw-text [{:keys [text x y size color]}]
+ `(draw-text! ~text ~x ~y ~size ~color))
