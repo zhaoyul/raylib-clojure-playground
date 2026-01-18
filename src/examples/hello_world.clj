@@ -60,6 +60,24 @@
                  :time (System/nanoTime)
                  :time-acc [1]}))
 
+(defonce app-state (atom {:pending-tasks []})) ;; 指令队列
+(defn dispatch-on-main "辅助函数：让 REPL 调用此函数来分发任务" [f]
+  (swap! app-state update :pending-tasks conj f))
+
+(defn process-pending-tasks!
+  "主线程逻辑：执行队列中的任务"
+  []
+  (let [tasks (:pending-tasks @app-state)]
+    (when (seq tasks)
+      ;; 清空队列
+      (swap! app-state assoc :pending-tasks [])
+      ;; 依次执行任务 (都在主线程运行)
+      (doseq [task tasks]
+        (try
+          (task)
+          (catch Exception e
+            (println "Error in main thread task:" e)))))))
+
 (defn start []
   (nrepl/start {:port 7888})
   (init)
@@ -69,6 +87,9 @@
       (when-not (or (:exit? game) (rcw/window-should-close?))
         (reset! game-atom game)
         (draw game)
+
+        (process-pending-tasks!)
+
         (recur))))
   (rcw/close-window!))
 
@@ -76,6 +97,12 @@
   (start))
 
 (comment
+
+  (swap! game-atom assoc :label "emacs is the best")
+
+  (require '[raylib.core.window :as win])
+
+  (dispatch-on-main #(win/set-window-size! 700 400))
   (init)
   (start)
   (future (start))
