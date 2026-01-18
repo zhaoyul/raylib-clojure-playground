@@ -9,7 +9,8 @@
    [raylib.shapes.basic :as rsb]
    [raylib.colors :as colors]
    [raylib.enums :as enums]
-   [raylib-ext :as ext]))
+   [raylib-ext :as ext]
+   [raylib.nrepl :as nrepl]))
 
 (def WIDTH 800)
 (def HEIGHT 450)
@@ -177,6 +178,7 @@
 
 (defn start []
   (init)
+  (nrepl/start {:port 7888})
   (loop []
     (let [game (tick (update-fps @game-atom))]
       (when-not (rcw/window-should-close?)
@@ -189,6 +191,7 @@
   (start))
 
 (comment
+  (swap! game-atom assoc :screen :game)
   (future (start))
   ;;
   )
