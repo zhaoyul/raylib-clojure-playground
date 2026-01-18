@@ -233,13 +233,12 @@
         collided-asteroids (mapv second collisions)
         collided-bullets (mapv first collisions)
         asteroids-remaining  (mapcat (fn [asteroid]
-                                    (if (some #(= asteroid %) collided-asteroids)
-                                      (explode-asteroid asteroid)
-                                      [asteroid])) asteroids)
+                                       (if (some #(= asteroid %) collided-asteroids)
+                                         (explode-asteroid asteroid)
+                                         [asteroid])) asteroids)
         bullets-remaining (remove (fn [bullet] (some #(= bullet %) collided-bullets)) bullets)]
     (assoc game :bullets bullets-remaining
            :asteroids asteroids-remaining)))
-
 
 (defn bullet-firing-vector [ship]
   (let [angle (:orientation ship)
@@ -256,9 +255,9 @@
                (rck/is-key-down? (:left enums/keyboard-key)) (update :ship (fn [ship] (assoc ship :orientation (- (:orientation ship) 0.05))))
                (rck/is-key-down? (:right enums/keyboard-key)) (update :ship (fn [ship] (assoc ship :orientation (+ (:orientation ship) 0.05))))
                (rck/is-key-down? (:up enums/keyboard-key)) (update :ship (fn [ship]
-                                                        (assoc ship :velocity (vector-add (:velocity ship) (ship-thrust-vector ship)))))
+                                                                           (assoc ship :velocity (vector-add (:velocity ship) (ship-thrust-vector ship)))))
                (rck/is-key-down? (:down enums/keyboard-key)) (update :ship (fn [ship]
-                                                          (assoc ship :velocity (vector-sub (:velocity ship) (ship-thrust-vector ship))))))]
+                                                                             (assoc ship :velocity (vector-sub (:velocity ship) (ship-thrust-vector ship))))))]
     (if (rck/is-key-pressed? (:space enums/keyboard-key))
       (if (:alive game)
         (update game :bullets (fn [bullets]
@@ -487,7 +486,7 @@
 (defn init []
   ;; Set config flags before creating window
   (rcw/set-config-flags! (bit-or (:window-resizable enums/config-flag)
-                                  (:vsync-hint enums/config-flag)))
+                                 (:vsync-hint enums/config-flag)))
 
   ;; Get monitor size for fullscreen
   (rcw/init-window! VIRTUAL_WIDTH VIRTUAL_HEIGHT "Raylib Clojure Asteroids")

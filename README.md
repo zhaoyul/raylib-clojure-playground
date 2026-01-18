@@ -186,13 +186,13 @@ Most examples share these common controls:
 
 This project includes pre-built Raylib libraries for different platforms in the libs folder:
 
-| Platform | Directory | Library |
-|----------|-----------|---------|
-| macOS | libs/macos | libraylib.5.5.0.dylib |
-| Linux 64-bit | libs/linux_amd64 | libraylib.so.5.5.0 |
-| Linux 32-bit | libs/linux_i386 | libraylib.a |
-| Windows 64-bit | libs/win64_msvc16 | raylib.dll |
-| Windows 32-bit | libs/win32_msvc16 | raylib.dll |
+| Platform       | Directory         | Library               |
+|----------------|-------------------|-----------------------|
+| macOS          | libs/macos        | libraylib.5.5.0.dylib |
+| Linux 64-bit   | libs/linux_amd64  | libraylib.so.5.5.0    |
+| Linux 32-bit   | libs/linux_i386   | libraylib.a           |
+| Windows 64-bit | libs/win64_msvc16 | raylib.dll            |
+| Windows 32-bit | libs/win32_msvc16 | raylib.dll            |
 
 The correct library is loaded automatically based on your operating system.
 

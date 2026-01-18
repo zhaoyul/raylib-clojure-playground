@@ -54,18 +54,18 @@
   (rcd/end-drawing!))
 
 (def game-atom (atom
-                 {:exit? false
-                  :label "Hello world"
-                  :dt 0
-                  :time (System/nanoTime)
-                  :time-acc [1]}))
+                {:exit? false
+                 :label "Hello world"
+                 :dt 0
+                 :time (System/nanoTime)
+                 :time-acc [1]}))
 
 (defn start []
   (nrepl/start {:port 7888})
   (init)
   (loop []
     (let [game (tick (assoc @game-atom
-                       :dt (rct/get-frame-time)))]
+                            :dt (rct/get-frame-time)))]
       (when-not (or (:exit? game) (rcw/window-should-close?))
         (reset! game-atom game)
         (draw game)

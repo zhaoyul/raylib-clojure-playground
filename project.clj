@@ -9,7 +9,9 @@
                  ;; Override coffi to use JDK 22+ compatible version
                  [org.suskalo/coffi "1.0.615"]
                  ;; insn is a dependency of coffi
-                 [insn/insn "0.5.4"]]
+                 [insn/insn "0.5.4"]
+                 ;; Force newer ASM for ACC_OPEN support (needed by insn on newer JDKs)
+                 [org.ow2.asm/asm "9.7.1"]]
 
   :source-paths ["src"]
   :resource-paths ["resources"]
